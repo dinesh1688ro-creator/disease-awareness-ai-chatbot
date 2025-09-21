@@ -1,31 +1,140 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>HealthWise AI Chatbot</title>
-  <link rel="stylesheet" href="style.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Disease Awareness AI Chatbot</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #f5f5f5;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+
+        .chat-container {
+            background: #fff;
+            width: 400px;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0px 0px 10px rgba(0,0,0,0.1);
+        }
+
+        h2 {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        #chat-history {
+            border: 1px solid #ddd;
+            height: 250px;
+            overflow-y: auto;
+            padding: 10px;
+            border-radius: 5px;
+            margin-bottom: 10px;
+            background: #fafafa;
+        }
+
+        .chat-message {
+            margin: 5px 0;
+        }
+
+        .user-msg {
+            text-align: right;
+            color: #0066cc;
+        }
+
+        .bot-msg {
+            text-align: left;
+            color: #333;
+        }
+
+        #user-question {
+            width: calc(100% - 60px);
+            padding: 8px;
+            margin-right: 5px;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+        }
+
+        #ask-btn {
+            padding: 8px 12px;
+            border-radius: 5px;
+            border: none;
+            background: #0066cc;
+            color: #fff;
+            cursor: pointer;
+        }
+
+        #ask-btn:hover {
+            background: #004999;
+        }
+    </style>
 </head>
 <body>
-  <div class="chat-container">
-    <header>
-      <h1>HealthWise</h1>
-      <p>Disease Awareness Chatbot</p>
-    </header>
-    <div id="chat-box" class="chat-box">
-      <div class="bot-message">Hi! Ask me about symptoms, prevention, or vaccines.</div>
-    </div>
-    <div class="predefined-questions">
-      <button class="preset-btn">What are cold symptoms?</button>
-      <button class="preset-btn">How to prevent fever?</button>
-      <button class="preset-btn">Vaccine schedule for children</button>
-    </div>
-    <div class="input-box">
-      <input type="text" id="user-input" placeholder="Type your question here...">
-      <button id="send-btn">Send</button>
-    </div>
-  </div>
 
-  <script src="script.js"></script>
+<div class="chat-container">
+    <h2>Disease Awareness AI Chatbot</h2>
+    <div id="chat-history"></div>
+    <input type="text" id="user-question" placeholder="Type your question...">
+    <button id="ask-btn">Ask</button>
+</div>
+
+<script src="script.js"></script>
+<script>
+    // Add messages to chat history
+    function addMessage(message, type) {
+        const chatHistory = document.getElementById("chat-history");
+        const msgDiv = document.createElement("div");
+        msgDiv.classList.add("chat-message");
+        msgDiv.classList.add(type === "user" ? "user-msg" : "bot-msg");
+        msgDiv.innerText = message;
+        chatHistory.appendChild(msgDiv);
+        chatHistory.scrollTop = chatHistory.scrollHeight;
+    }
+
+    // Override askQuestion function to update chat history
+    const originalAskQuestion = window.askQuestion;
+    window.askQuestion = async function() {
+        const inputBox = document.getElementById("user-question");
+        const question = inputBox.value.trim();
+        if (!question) return;
+
+        addMessage(question, "user"); // show user message
+        inputBox.value = "";
+        addMessage("Thinking...", "bot"); // temporary bot message
+
+        try {
+            const response = await fetch("https://disease-backend-production.up.railway.app/getAnswer", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ question })
+            });
+            const data = await response.json();
+            // remove temporary "Thinking..." message
+            const chatHistory = document.getElementById("chat-history");
+            chatHistory.removeChild(chatHistory.lastChild);
+
+            addMessage(data.answer || "No answer returned", "bot");
+        } catch (error) {
+            console.error(error);
+            const chatHistory = document.getElementById("chat-history");
+            chatHistory.removeChild(chatHistory.lastChild);
+            addMessage("Error connecting to backend.", "bot");
+        }
+    };
+
+    // Attach function to button and Enter key
+    document.getElementById("ask-btn").addEventListener("click", window.askQuestion);
+    document.getElementById("user-question").addEventListener("keypress", function(e) {
+        if (e.key === "Enter") {
+            window.askQuestion();
+        }
+    });
+</script>
+
 </body>
 </html>
+
