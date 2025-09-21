@@ -4,279 +4,164 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Disease Awareness AI Chatbot</title>
+<link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
 <style>
+/* Reset & Body */
+* { margin: 0; padding: 0; box-sizing: border-box; }
 body {
-    font-family: 'Arial', sans-serif;
-    background: linear-gradient(135deg, #74ebd5, #ACB6E5);
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    height: 100vh;
-    margin: 0;
+  font-family: 'Roboto', sans-serif;
+  background: linear-gradient(135deg, #74ebd5, #ACB6E5);
+  height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 
+/* Chat Container */
 .chat-container {
-    background: #fff;
-    width: 450px;
-    max-width: 95%;
-    border-radius: 15px;
-    box-shadow: 0 10px 25px rgba(0,0,0,0.2);
-    display: flex;
-    flex-direction: column;
-    overflow: hidden;
+  width: 450px;
+  max-width: 95%;
+  height: 600px;
+  background: #fff;
+  border-radius: 15px;
+  box-shadow: 0 15px 30px rgba(0,0,0,0.25);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
 }
 
-h2 {
-    text-align: center;
-    background: #0066cc;
-    color: #fff;
-    padding: 15px 0;
-    margin: 0;
-    font-size: 1.5rem;
+/* Header */
+.chat-container h2 {
+  text-align: center;
+  background: #0066cc;
+  color: #fff;
+  padding: 15px;
+  font-size: 1.6rem;
+  font-weight: 700;
 }
 
+/* Categories */
 #categories {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 8px;
-    padding: 10px;
-    background: #f0f0f0;
-    border-bottom: 1px solid #ddd;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  padding: 10px;
+  background: #f0f0f0;
+  border-bottom: 1px solid #ddd;
 }
-
 .category-btn {
-    background: #00aaff;
-    color: #fff;
-    border: none;
-    border-radius: 20px;
-    padding: 6px 12px;
-    cursor: pointer;
-    font-size: 0.9rem;
-    transition: background 0.3s;
+  background: #0066cc;
+  color: #fff;
+  border: none;
+  border-radius: 20px;
+  padding: 6px 12px;
+  cursor: pointer;
+  font-size: 0.85rem;
+  transition: 0.3s;
 }
-.category-btn:hover { background: #0077aa; }
+.category-btn:hover { background: #004999; }
 
+/* Preloaded Questions */
 #preloaded-questions {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 6px;
-    padding: 5px 10px 10px 10px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  padding: 5px 10px 10px 10px;
 }
-
 .preloaded-btn {
-    background: #0066cc;
-    color: #fff;
-    border: none;
-    border-radius: 20px;
-    padding: 6px 12px;
-    cursor: pointer;
-    font-size: 0.85rem;
-    transition: background 0.3s;
+  background: #00b894;
+  color: #fff;
+  border: none;
+  border-radius: 20px;
+  padding: 6px 12px;
+  cursor: pointer;
+  font-size: 0.85rem;
+  transition: 0.3s;
 }
-.preloaded-btn:hover { background: #004999; }
+.preloaded-btn:hover { background: #019875; }
 
+/* Chat History */
 #chat-history {
-    flex: 1;
-    padding: 15px;
-    overflow-y: auto;
-    background: #f9f9f9;
+  flex: 1;
+  padding: 15px;
+  overflow-y: auto;
+  background: #f9f9f9;
 }
 
+/* Chat Message */
 .chat-message {
-    margin: 10px 0;
-    max-width: 80%;
-    padding: 10px 15px;
-    border-radius: 20px;
-    opacity: 0;
-    transform: translateY(20px);
-    animation: fadeInUp 0.3s forwards;
+  margin: 10px 0;
+  max-width: 80%;
+  padding: 12px 18px;
+  border-radius: 20px;
+  opacity: 0;
+  transform: translateY(20px);
+  animation: fadeInUp 0.3s forwards;
+  position: relative;
 }
+.user-msg { background: #0066cc; color: #fff; align-self: flex-end; border-bottom-right-radius: 0; }
+.bot-msg { background: #e0e0e0; color: #333; align-self: flex-start; border-bottom-left-radius: 0; }
 
-.user-msg {
-    background: #0066cc;
-    color: #fff;
-    align-self: flex-end;
-    border-bottom-right-radius: 0;
-}
-
-.bot-msg {
-    background: #e0e0e0;
-    color: #333;
-    align-self: flex-start;
-    border-bottom-left-radius: 0;
-}
-
+/* Typing Animation */
 .typing {
-    position: relative;
-    width: 60px;
-    height: 20px;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
+  display: flex;
+  gap: 5px;
 }
-
 .typing span {
-    display: block;
-    width: 10px;
-    height: 10px;
-    background: #333;
-    border-radius: 50%;
-    animation: blink 1s infinite;
+  display: block;
+  width: 8px;
+  height: 8px;
+  background: #333;
+  border-radius: 50%;
+  animation: blink 1s infinite;
 }
 .typing span:nth-child(2) { animation-delay: 0.2s; }
 .typing span:nth-child(3) { animation-delay: 0.4s; }
 
-@keyframes blink { 0%, 80%, 100% { opacity: 0; } 40% { opacity: 1; } }
-@keyframes fadeInUp { to { opacity: 1; transform: translateY(0); } }
-
+/* Input Area */
 .input-area {
-    display: flex;
-    border-top: 1px solid #ddd;
-    padding: 10px;
-    background: #fff;
+  display: flex;
+  padding: 10px;
+  border-top: 1px solid #ddd;
+  background: #fff;
 }
-
 #user-question {
-    flex: 1;
-    padding: 10px;
-    border-radius: 20px;
-    border: 1px solid #ccc;
-    outline: none;
+  flex: 1;
+  padding: 10px 15px;
+  border-radius: 25px;
+  border: 1px solid #ccc;
+  outline: none;
 }
-
 #ask-btn {
-    background: #0066cc;
-    color: #fff;
-    border: none;
-    padding: 0 20px;
-    margin-left: 10px;
-    border-radius: 20px;
-    cursor: pointer;
-    transition: background 0.3s;
+  margin-left: 10px;
+  background: #0066cc;
+  color: #fff;
+  border: none;
+  padding: 0 20px;
+  border-radius: 25px;
+  cursor: pointer;
+  transition: 0.3s;
 }
 #ask-btn:hover { background: #004999; }
+
+/* Animations */
+@keyframes fadeInUp { to { opacity: 1; transform: translateY(0); } }
+@keyframes blink { 0%, 80%, 100% { opacity: 0; } 40% { opacity: 1; } }
 
 </style>
 </head>
 <body>
-
 <div class="chat-container">
-    <h2>Disease Awareness AI Chatbot</h2>
-    <div id="categories"></div>
-    <div id="preloaded-questions"></div>
-    <div id="chat-history"></div>
-    <div class="input-area">
-        <input type="text" id="user-question" placeholder="Type your question...">
-        <button id="ask-btn">Ask</button>
-    </div>
+  <h2>Disease Awareness AI Chatbot</h2>
+  <div id="categories"></div>
+  <div id="preloaded-questions"></div>
+  <div id="chat-history"></div>
+  <div class="input-area">
+    <input type="text" id="user-question" placeholder="Type your question...">
+    <button id="ask-btn">Ask</button>
+  </div>
 </div>
-
-<script>
-const BACKEND_URL = "https://disease-backend-production.up.railway.app";
-const chatHistory = document.getElementById("chat-history");
-const inputBox = document.getElementById("user-question");
-const askBtn = document.getElementById("ask-btn");
-const categoriesContainer = document.getElementById("categories");
-const preloadedContainer = document.getElementById("preloaded-questions");
-
-// Preloaded questions categorized
-const preloadedQA = [
-    { q: "What is diabetes?", a: "Diabetes is a condition where blood sugar levels are too high.", category: "Endocrine" },
-    { q: "What are symptoms of hypertension?", a: "Common symptoms include headaches, dizziness, and shortness of breath.", category: "Heart" },
-    { q: "How to prevent heart disease?", a: "Maintain a healthy diet, exercise regularly, and avoid smoking.", category: "Heart" },
-    { q: "What is COVID-19?", a: "COVID-19 is a contagious disease caused by the SARS-CoV-2 virus.", category: "Infectious" },
-    { q: "How can I boost immunity?", a: "Eat nutritious food, sleep well, exercise, and manage stress.", category: "General" },
-    { q: "What is asthma?", a: "Asthma is a respiratory condition causing difficulty in breathing.", category: "Respiratory" },
-    { q: "Symptoms of flu?", a: "Fever, cough, sore throat, fatigue, and body aches are common.", category: "Infectious" },
-    { q: "How to prevent malaria?", a: "Use mosquito nets, repellents, and remove standing water.", category: "Infectious" },
-    { q: "What is obesity?", a: "Obesity is excessive body fat that increases health risks.", category: "General" },
-    { q: "How to maintain mental health?", a: "Practice mindfulness, social support, and seek help when needed.", category: "Mental" }
-];
-
-const categories = [...new Set(preloadedQA.map(item => item.category))];
-
-// Add category buttons
-categories.forEach(cat => {
-    const btn = document.createElement("button");
-    btn.classList.add("category-btn");
-    btn.textContent = cat;
-    btn.addEventListener("click", () => loadQuestionsByCategory(cat));
-    categoriesContainer.appendChild(btn);
-});
-
-// Load questions for selected category
-function loadQuestionsByCategory(category) {
-    preloadedContainer.innerHTML = "";
-    preloadedQA.filter(item => item.category === category).forEach(item => {
-        const btn = document.createElement("button");
-        btn.classList.add("preloaded-btn");
-        btn.textContent = item.q;
-        btn.addEventListener("click", () => {
-            addMessage(item.q, "user");
-            showTypingMessage(item.a);
-        });
-        preloadedContainer.appendChild(btn);
-    });
-}
-
-// Add message to chat
-function addMessage(text, type) {
-    const msgDiv = document.createElement("div");
-    msgDiv.classList.add("chat-message", type);
-    msgDiv.textContent = text;
-    chatHistory.appendChild(msgDiv);
-    chatHistory.scrollTop = chatHistory.scrollHeight;
-    return msgDiv;
-}
-
-// Show typing animation and then display answer
-function showTypingMessage(answer) {
-    const typingDiv = document.createElement("div");
-    typingDiv.classList.add("chat-message", "bot-msg");
-    typingDiv.innerHTML = '<div class="typing"><span></span><span></span><span></span></div>';
-    chatHistory.appendChild(typingDiv);
-    chatHistory.scrollTop = chatHistory.scrollHeight;
-
-    setTimeout(() => {
-        typingDiv.innerHTML = answer;
-    }, Math.min(1500 + answer.length * 20, 3000)); // typing effect duration based on answer length
-}
-
-// Ask question to backend
-async function askQuestion() {
-    const question = inputBox.value.trim();
-    if (!question) return;
-
-    addMessage(question, "user");
-    inputBox.value = "";
-
-    const typingDiv = document.createElement("div");
-    typingDiv.classList.add("chat-message", "bot-msg");
-    typingDiv.innerHTML = '<div class="typing"><span></span><span></span><span></span></div>';
-    chatHistory.appendChild(typingDiv);
-    chatHistory.scrollTop = chatHistory.scrollHeight;
-
-    try {
-        const response = await fetch(`${BACKEND_URL}/getAnswer`, {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ question })
-        });
-        const data = await response.json();
-        typingDiv.innerHTML = data.answer || "No answer returned";
-    } catch (err) {
-        typingDiv.innerHTML = "Error connecting to backend.";
-        console.error(err);
-    }
-}
-
-// Event listeners
-askBtn.addEventListener("click", askQuestion);
-inputBox.addEventListener("keypress", e => { if (e.key === "Enter") askQuestion(); });
-
-// Load first category by default
-window.onload = () => { loadQuestionsByCategory(categories[0]); };
-</script>
-
+<script src="script.js"></script>
 </body>
 </html>
+
