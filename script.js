@@ -1,5 +1,5 @@
 // script.js
-const BACKEND_URL = "https://disease-backend-production.up.railway.app";
+const BACKEND_URL = "https://backend-chatbot-z07k.onrender.com/";
 
 async function askQuestion() {
     const inputBox = document.getElementById("user-question");
@@ -44,3 +44,4 @@ document.getElementById("ask-btn").addEventListener("click", askQuestion);
 document.getElementById("user-question").addEventListener("keypress", function(e) {
     if (e.key === "Enter") askQuestion();
 });
+
