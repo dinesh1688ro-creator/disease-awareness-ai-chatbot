@@ -1,18 +1,28 @@
 // script.js
-
-// Your Railway backend URL
 const BACKEND_URL = "https://disease-backend-production.up.railway.app";
 
-// Function to send question to backend
 async function askQuestion() {
     const inputBox = document.getElementById("user-question");
-    const responseBox = document.getElementById("chatbot-response");
+    const chatHistory = document.getElementById("chat-history");
     const question = inputBox.value.trim();
 
     if (!question) return;
 
-    // Show loading message
-    responseBox.innerText = "Thinking...";
+    // Show user message
+    const userDiv = document.createElement("div");
+    userDiv.className = "chat-message user-msg";
+    userDiv.innerText = question;
+    chatHistory.appendChild(userDiv);
+    chatHistory.scrollTop = chatHistory.scrollHeight;
+
+    inputBox.value = "";
+
+    // Show bot thinking
+    const botDiv = document.createElement("div");
+    botDiv.className = "chat-message bot-msg";
+    botDiv.innerText = "Thinking...";
+    chatHistory.appendChild(botDiv);
+    chatHistory.scrollTop = chatHistory.scrollHeight;
 
     try {
         const response = await fetch(`${BACKEND_URL}/getAnswer`, {
@@ -20,24 +30,17 @@ async function askQuestion() {
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ question })
         });
-
         const data = await response.json();
-        responseBox.innerText = data.answer || "No answer returned";
+
+        botDiv.innerText = data.answer || "No answer returned";
     } catch (error) {
         console.error(error);
-        responseBox.innerText = "Error connecting to backend.";
+        botDiv.innerText = "Error connecting to backend.";
     }
-
-    // Clear input box
-    inputBox.value = "";
 }
 
-// Attach function to button click
+// Attach to button and Enter key
 document.getElementById("ask-btn").addEventListener("click", askQuestion);
-
-// Optional: allow pressing Enter key to send question
 document.getElementById("user-question").addEventListener("keypress", function(e) {
-    if (e.key === "Enter") {
-        askQuestion();
-    }
+    if (e.key === "Enter") askQuestion();
 });
